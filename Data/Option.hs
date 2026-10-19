@@ -9,19 +9,31 @@ todo = error "TODO"
 data Option a = None | Some a deriving (Show, Eq)
 
 -- Now implement Functor, Applicative and Monad
+--instance Functor Option where
+--    fmap :: (a -> b) -> Option a -> Option b
+--    fmap _ None = None
+--    fmap f (Some a) = Some(f a) 
+
 instance Functor Option where
     fmap :: (a -> b) -> Option a -> Option b
-    fmap _ None = None
-    fmap f (Some a) = Some(f a) 
+    fmap f a = pure f <*> a
+    
+--instance Applicative Option where
+--    pure :: a -> Option a
+--    pure a = Some a
+--
+--    (<*>) :: Option (a -> b) -> Option a -> Option b
+--    (<*>) None _ = None
+--    (<*>) _ None = None
+--    (<*>) (Some f) (Some a) = Some(f a) 
+
 
 instance Applicative Option where
     pure :: a -> Option a
     pure a = Some a
 
     (<*>) :: Option (a -> b) -> Option a -> Option b
-    (<*>) None _ = None
-    (<*>) _ None = None
-    (<*>) (Some f) (Some a) = Some(f a) 
+    (<*>) mf ma = mf >>= \f -> ma >>= \a -> pure (f a)
 
 instance Monad Option where
   (>>=) :: Option a -> (a -> Option b) -> Option b
